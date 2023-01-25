@@ -10,14 +10,23 @@ c语言扩展
 - kcodec: 编解码
     - base64
     - url/url raw
-- kcrypto: hash计算
-    - md4
-    - md5
-    - sha1
-    - sha224
-    - sha256
-    - sha384
-    - sha512
+- kcrypto: 
+    - hash计算:
+        - md4
+        - md5
+        - sha1
+        - sha224
+        - sha256
+        - sha384
+        - sha512
+    - rsa:
+        - public encode
+        - private decode
+        - private encode
+        - public decode
+    - aes:
+        - encode
+        - decode
 - kcurl: 封装 libcurl 方法(get, post, put)
 - kmc: 封装 libmemcached 方法(set, get, del)
 - kmysql: 封装 mysql 方法(exec, query, trans)
@@ -28,7 +37,12 @@ c语言扩展
 
 #### 安装教程
 
-1.  需要哪个功能，直接把源文件加到工程中使用就行。
+1. 需要哪个功能，直接把源文件加到工程中使用就行。
+2. 有些需要添加链接库如:
+    - kcrypto 需要 OpenSSL
+    - kmc 需要 libmemcached
+    - kmysql 需要 mariadb-devel
+    - kcurl 需要 libcurl-devel
 
 #### 使用说明
 
