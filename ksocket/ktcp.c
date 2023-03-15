@@ -78,7 +78,7 @@ int connect_timeout(int sockfd, const struct sockaddr *addr, socklen_t addrlen, 
  */
 int ktcp_connect(char *host, char *port, int timeout, char *err, size_t err_size)
 {
-    int sockfd = -1;
+    int sockfd = -1, n;
     struct addrinfo hints, *servinfo, *p;
     int rv;
     char s[INET6_ADDRSTRLEN];
@@ -99,7 +99,13 @@ int ktcp_connect(char *host, char *port, int timeout, char *err, size_t err_size
             continue;
         }
 
-        if (connect_timeout(sockfd, p->ai_addr, p->ai_addrlen, timeout) == -1) {
+        n = connect_timeout(sockfd, p->ai_addr, p->ai_addrlen, timeout);
+        if (n == -1) {      // error
+            close(sockfd);
+            i++;
+            continue;
+        }
+        if (n == -2) {      // timeout
             close(sockfd);
             i++;
             continue;
