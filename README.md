@@ -32,6 +32,7 @@ c语言扩展
 - kmysql: 封装 mysql 方法(exec, query, trans)
 - kchar: 封装 char 操作方法(追加、拷贝)
 - klist: 字典， key -> value
+- ksig: 封闭信号函数
 
 
 
