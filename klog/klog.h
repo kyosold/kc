@@ -2,6 +2,7 @@
 #define __KLOG_H__
 
 #include <syslog.h>
+#include <signal.h>
 
 #define KLOG_DEBUG 7
 #define KLOG_INFO 6
@@ -14,7 +15,7 @@
 
 #define KLOG_MAX_LINE 4096
 
-int klog_type; // 0:_klog_write 1:_klog_write_file
+volatile __sig_atomic_t klog_type; // 0:_klog_write 1:_klog_write_file
 
 void klog_set_level(int level);
 void klog_set_sid(char *sid);
