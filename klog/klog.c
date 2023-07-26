@@ -50,7 +50,8 @@ void _klog_write(int level, const char *file, int line,
  * @param ident     the name of program
  * @param facility  LOG_MAIL/LOG_USER
  * @param level     KLOG_DEBUG/KLOG_INFO ...
- * @param sid       using tag session
+ * @param sid       set sid for session
+ * @example klog_open("test_klog", LOG_MAIL, KLOG_DEBUG, "FFFFFF");
  */
 void klog_open(const char *ident, int facility, int level, char *sid)
 {
@@ -58,42 +59,25 @@ void klog_open(const char *ident, int facility, int level, char *sid)
     klog_facility = facility;
     klog_level = level;
     snprintf(klog_sid, sizeof(klog_sid), "%s", sid);
+    klog_type = 0;
 }
 
 // --- Use write to syslog file ---
 static char klog_file[1024] = {0};
 static char klog_hostname[1024];
-void klog_open_plus(const char *ident, int facility, int level, char *sid)
-{
-    switch (facility)
-    {
-    case LOG_MAIL:
-        snprintf(klog_file, sizeof(klog_file), "/var/log/maillog");
-        break;
-    case LOG_AUTHPRIV:
-        snprintf(klog_file, sizeof(klog_file), "/var/log/secure");
-        break;
-    case LOG_CRON:
-        snprintf(klog_file, sizeof(klog_file), "/var/log/cron");
-        break;
-    case LOG_DAEMON:
-        snprintf(klog_file, sizeof(klog_file), "/var/log/maillog");
-        break;
-    case LOG_NEWS:
-    case LOG_UUCP:
-        snprintf(klog_file, sizeof(klog_file), "/var/log/spooler");
-        break;
-    case LOG_FTP:
-    case LOG_KERN:
-    case LOG_LPR:
-    case LOG_SYSLOG:
-    case LOG_USER:
-    case LOG_AUTH:
-    default:
-        snprintf(klog_file, sizeof(klog_file), "/var/log/messages");
-        break;
-    }
 
+/**
+ * @brief open log file
+ *
+ * @param file      write log to file name
+ * @param ident     the name of program
+ * @param level     KLOG_DEBUG/KLOG_INFO ...
+ * @param sid       set sid for session
+ * @example klog_open_file(argv[1], "test_klog", KLOG_DEBUG, "FF00FF");
+ */
+void klog_open_file(const char *file, const char *ident, int level, char *sid)
+{
+    snprintf(klog_file, sizeof(klog_file), "%s", file);
     snprintf(klog_ident, sizeof(klog_ident), "%s", ident);
     klog_level = level;
     snprintf(klog_sid, sizeof(klog_sid), "%s", sid);
@@ -101,6 +85,7 @@ void klog_open_plus(const char *ident, int facility, int level, char *sid)
     char *end = (char *)memchr(klog_hostname, '.', strlen(klog_hostname));
     if (end)
         *end = 0;
+    klog_type = 1;
 }
 
 void _klog_write_file(int level, const char *file, int line,
@@ -134,29 +119,7 @@ void _klog_write_file(int level, const char *file, int line,
         fclose(fp);
     }
 
-    // // final log
-    // char new_fmt[KLOG_MAX_LINE];
-    // const char *head_fmt = "%s %s\n";
-    // snprintf(new_fmt, sizeof(new_fmt), head_fmt, pref, log_line);
-
-    // int fd = open(klog_file, O_WRONLY | O_NDELAY | O_APPEND | O_CREAT, 0644);
-    // if (fd == -1)
-    //     return;
-    // write(fd, new_fmt, strlen(new_fmt));
-    // close(fd);
     return;
-}
-
-void klog_open_file(const char *file, const char *ident, int level, char *sid)
-{
-    snprintf(klog_file, sizeof(klog_file), "%s", file);
-    snprintf(klog_ident, sizeof(klog_ident), "%s", ident);
-    klog_level = level;
-    snprintf(klog_sid, sizeof(klog_sid), "%s", sid);
-    gethostname(klog_hostname, sizeof(klog_hostname));
-    char *end = (char *)memchr(klog_hostname, '.', strlen(klog_hostname));
-    if (end)
-        *end = 0;
 }
 
 /**
